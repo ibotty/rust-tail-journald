@@ -3,9 +3,6 @@ name = "tail_journald"
 version = "0.1.0"
 authors = ["Tobias Florek <tob@butter.sh>"]
 
-[dependencies]
-error-chain = "0.10"
-
 [dependencies.systemd]
 git = "https://github.com/ibotty/rust-systemd.git"
 branch = "await-new-records"
