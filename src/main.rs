@@ -1,18 +1,30 @@
 extern crate systemd;
+use std::io::Result;
 use systemd::journal::{Journal, JournalFiles, JournalSeek, JournalRecord};
-use systemd::Result;
 
 pub fn open_journal() -> Result<Journal> {
-    let mut j =
-        Journal::open(JournalFiles::All, false, false)?;
+    let mut j = Journal::open(JournalFiles::All, false, false)?;
     j.seek(JournalSeek::Tail)?;
     Ok(j)
 }
 
 fn run() -> Result<()> {
     let mut j = open_journal()?;
-    j.watch_all_elements(f)?;
-    Ok(())
+    loop {
+        // this cannot return Ok(..)
+        match j.watch_all_elements(f) {
+            Err(error) => {
+                // Error code 74 is BADMSG
+                // Skip invalid records (due to corrupt journal)
+                if error.raw_os_error() == Some(74) {
+                    continue;
+                } else {
+                    return Err(error);
+                }
+            }
+            Ok(_) => continue
+        }
+    }
 }
 
 pub fn f(rec: JournalRecord) -> Result<()> {
