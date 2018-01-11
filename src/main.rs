@@ -10,27 +10,23 @@ pub fn open_journal() -> Result<Journal> {
 
 fn run() -> Result<()> {
     let mut j = open_journal()?;
-    loop {
-        // this cannot return Ok(..)
-        match j.watch_all_elements(f) {
+    for candidate in j.iterate_from_cursor_waiting_for_new_records() {
+        match candidate {
             Err(error) => {
                 // Error code 74 is BADMSG
                 // Skip invalid records (due to corrupt journal)
-                if error.raw_os_error() == Some(74) {
-                    continue;
-                } else {
+                if error.raw_os_error() != Some(74) {
                     return Err(error);
                 }
-            }
-            Ok(_) => continue
+            },
+            Ok(item) => f(item)?
         }
     }
+    Ok(())
 }
 
 pub fn f(rec: JournalRecord) -> Result<()> {
-    for (key, value) in rec.iter() {
-        println!("{}: {}", key, value)
-    }
+    println!("{:?}", rec);
     Ok(())
 }
 
