@@ -28,9 +28,7 @@ fn run() -> Result<()> {
 }
 
 pub fn f(rec: JournalRecord) -> Result<()> {
-    for (key, value) in rec.iter() {
-        println!("{}: {}", key, value)
-    }
+    println!("MESSAGE: {}", rec.get("MESSAGE").unwrap());
     Ok(())
 }
 
