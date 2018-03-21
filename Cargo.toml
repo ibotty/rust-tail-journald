@@ -5,5 +5,5 @@ authors = ["Tobias Florek <tob@butter.sh>"]
 
 [dependencies.systemd]
 git = "https://github.com/ibotty/rust-systemd.git"
-branch = "await-new-records"
+branch = "bug-7578-repro"
 version = "0.*"
